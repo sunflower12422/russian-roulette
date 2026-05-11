@@ -1,1 +1,186 @@
+#game-screen {
+    background: radial-gradient(ellipse at center, 
+        rgba(50, 0, 0, 0.6) 0%, 
+        var(--dark) 80%);
+}
 
+.game-container {
+    text-align: center;
+    padding: 2rem;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: var(--gold);
+}
+
+.game-info span {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--light-gray);
+}
+
+.drum-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 2rem auto;
+}
+
+.drum {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 6px solid #555;
+    background: radial-gradient(circle, #3a3a3a, #1a1a1a);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.drum.spinning {
+    animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.chamber-game {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #555;
+    background: radial-gradient(circle, #444, #222);
+    transition: all 0.3s ease;
+}
+
+.chamber-game:nth-child(1) { top: 15px; left: 105px; }
+.chamber-game:nth-child(2) { top: 50px; right: 25px; }
+.chamber-game:nth-child(3) { bottom: 50px; right: 25px; }
+.chamber-game:nth-child(4) { bottom: 15px; left: 105px; }
+.chamber-game:nth-child(5) { bottom: 50px; left: 25px; }
+.chamber-game:nth-child(6) { top: 50px; left: 25px; }
+
+.chamber-game.highlight {
+    border-color: var(--accent);
+    background: radial-gradient(circle, #ff4444, #8b0000);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+
+.chamber-game.bullet-mark {
+    border-color: var(--gold);
+}
+
+.gun-barrel {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 40px;
+    background: linear-gradient(180deg, #555, #888);
+    border-radius: 2px;
+}
+
+.game-status {
+    font-size: 1.5rem;
+    min-height: 3rem;
+    margin: 1.5rem 0;
+}
+
+.game-status.alive {
+    color: var(--success);
+}
+
+.game-status.dead {
+    color: var(--accent);
+    animation: deadShake 0.5s ease;
+    font-size: 2rem;
+}
+
+@keyframes deadShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 50%, 90% { transform: translateX(-5px); }
+    30%, 70% { transform: translateX(5px); }
+}
+
+.game-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.btn-shoot {
+    font-size: 1.6rem;
+    padding: 18px 50px;
+    background: linear-gradient(180deg, #cc0000, #660000);
+}
+
+.game-history {
+    margin-top: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    padding: 1rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.game-history h4 {
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.history-list {
+    list-style: none;
+    font-size: 0.8rem;
+}
+
+.history-list li {
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.history-list .hit {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.history-list .miss {
+    color: var(--success);
+}
+
+.muzzle-flash {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #fff, #ff0, transparent);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.muzzle-flash.active {
+    opacity: 1;
+    animation: flash 0.1s ease-out;
+}
+
+@keyframes flash {
+    from { transform: translateX(-50%) scale(0.5); opacity: 1; }
+    to { transform: translateX(-50%) scale(2); opacity: 0; }
+}
