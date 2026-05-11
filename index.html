@@ -1,1 +1,135 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Русская Рулетка</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/setup.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    
+    <!-- Кровавый эффект -->
+    <div id="blood-splatter" class="blood-splatter"></div>
+    
+    <!-- Главный контейнер -->
+    <div id="app">
+        
+        <!-- ЭКРАН 1: МЕНЮ -->
+        <div id="menu-screen" class="screen active">
+            <div class="menu-container">
+                <div class="menu-revolver">🔫</div>
+                <h1 class="menu-title">РУССКАЯ</h1>
+                <h1 class="menu-title">РУЛЕТКА</h1>
+                <p class="menu-subtitle">Испытай свою удачу</p>
+                
+                <div class="menu-buttons">
+                    <button id="btn-play" class="btn">🎯 ИГРАТЬ</button>
+                    <button id="btn-settings" class="btn btn-settings">⚙️ НАСТРОЙКИ</button>
+                </div>
+            </div>
+            <span class="version">v1.0.0</span>
+        </div>
+        
+        <!-- ЭКРАН 2: НАСТРОЙКА -->
+        <div id="setup-screen" class="screen">
+            <div class="setup-container">
+                <h2 class="setup-title">⚙️ НАСТРОЙКА ИГРЫ</h2>
+                
+                <div class="setup-section">
+                    <p class="section-label">🔫 Зарядите револьвер:</p>
+                    
+                    <div class="drum-setup">
+                        <div class="chamber-slot" data-index="0"></div>
+                        <div class="chamber-slot" data-index="1"></div>
+                        <div class="chamber-slot" data-index="2"></div>
+                        <div class="chamber-slot" data-index="3"></div>
+                        <div class="chamber-slot" data-index="4"></div>
+                        <div class="chamber-slot" data-index="5"></div>
+                    </div>
+                    
+                    <div class="bullet-counter">
+                        <button id="btn-minus" class="btn btn-small">−</button>
+                        <span id="bullet-count" class="count">1</span>
+                        <button id="btn-plus" class="btn btn-small">+</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button id="btn-random" class="btn btn-small">🎲 Случайно</button>
+                        <button id="btn-clear" class="btn btn-small">🗑️ Очистить</button>
+                    </div>
+                </div>
+                
+                <div class="setup-section">
+                    <p class="section-label">🎮 Режим игры:</p>
+                    <div class="mode-selector">
+                        <button id="mode-spin" class="mode-btn selected">🔄 Крутить барабан</button>
+                        <button id="mode-no-spin" class="mode-btn">🔒 Последовательно</button>
+                    </div>
+                </div>
+                
+                <div class="setup-buttons">
+                    <button id="btn-back-menu" class="btn btn-back">← Меню</button>
+                    <button id="btn-start-game" class="btn btn-danger">💀 НАЧАТЬ ИГРУ</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ЭКРАН 3: ИГРА -->
+        <div id="game-screen" class="screen">
+            <div class="game-container">
+                
+                <div class="game-info">
+                    <span>Раунд: <b id="round-counter">0</b></span>
+                    <span id="mode-display">🔄 Вращение</span>
+                </div>
+                
+                <div class="drum-container">
+                    <div id="game-drum" class="drum">
+                        <div class="chamber-game" data-index="0"></div>
+                        <div class="chamber-game" data-index="1"></div>
+                        <div class="chamber-game" data-index="2"></div>
+                        <div class="chamber-game" data-index="3"></div>
+                        <div class="chamber-game" data-index="4"></div>
+                        <div class="chamber-game" data-index="5"></div>
+                        <div class="gun-barrel"></div>
+                        <div id="muzzle-flash" class="muzzle-flash"></div>
+                    </div>
+                </div>
+                
+                <p id="game-status" class="game-status">🎯 Нажмите на курок</p>
+                
+                <div class="game-buttons">
+                    <button id="btn-shoot" class="btn btn-shoot">💥 ВЫСТРЕЛ</button>
+                </div>
+                
+                <div class="game-buttons" style="margin-top: 0.5rem;">
+                    <button id="btn-reset" class="btn btn-back">🔄 Играть снова</button>
+                    <button id="btn-to-menu" class="btn btn-back">🏠 Меню</button>
+                </div>
+                
+                <div class="game-history">
+                    <h4>📜 История выстрелов:</h4>
+                    <ul id="history-list" class="history-list">
+                        <li style="color: #666;">Пока выстрелов нет...</li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="js/game-logic.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/setup.js"></script>
+    <script src="js/game.js"></script>
+    
+</body>
+</html>
