@@ -5,7 +5,6 @@
 function initBuckshotGame() {
     
     const GC = window.GameController;
-    const elements = GC.getGameElements();
     
     // Элементы багшота
     const buckshotDrum = document.getElementById('buckshot-drum');
@@ -15,50 +14,40 @@ function initBuckshotGame() {
     const btnShootSelf = document.getElementById('btn-shoot-self');
     const btnShootBot = document.getElementById('btn-shoot-bot');
     const btnSkip = document.getElementById('btn-skip');
-    const btnShoot = elements.btnShoot;
-    const gameButtonsNormal = elements.gameButtonsNormal;
+    const normalDrumContainer = document.getElementById('normal-drum-container');
     
     // Состояние багшота
-    let buckshotChambers = [0, 0, 0, 0, 0, 0];
+    let buckshotChambersData = [0, 0, 0, 0, 0, 0];
     let totalBullets = 0;
     let bulletsLeft = 0;
-    let isPlayerTurn = true; // true - игрок, false - бот
+    let isPlayerTurn = true;
     let gameOver = false;
     let currentRound = 0;
     let isAnimating = false;
     
-    // Скрываем обычные кнопки
-    gameButtonsNormal.style.display = 'none';
+    // Скрываем обычный барабан
+    if (normalDrumContainer) normalDrumContainer.style.display = 'none';
     
-    // ========== ЗАРЯДКА (СЛУЧАЙНАЯ) ==========
+    // ========== ЗАРЯДКА ==========
     function loadBuckshot() {
-        // Случайное количество патронов (1-3)
-        totalBullets = Math.floor(Math.random() * 3) + 1;
+        totalBullets = Math.floor(Math.random() * 3) + 1; // 1-3 патрона
         bulletsLeft = totalBullets;
         
-        // Случайные позиции
-        buckshotChambers = [0, 0, 0, 0, 0, 0];
+        buckshotChambersData = [0, 0, 0, 0, 0, 0];
         const pos = [];
         while (pos.length < totalBullets) {
             const p = Math.floor(Math.random() * 6);
             if (!pos.includes(p)) pos.push(p);
         }
-        pos.forEach(p => buckshotChambers[p] = 1);
+        pos.forEach(p => buckshotChambersData[p] = 1);
         
-        // Игрок не знает где патроны
-        updateBuckshotDisplay();
-    }
-    
-    // ========== ОТОБРАЖЕНИЕ ==========
-    function updateBuckshotDisplay() {
-        buckshotChambers.forEach((ch, i) => {
-            buckshotChambers[i].classList.remove('highlight', 'highlight-safe', 'bullet-mark', 'hidden-bullet');
-            // Все гнёзда выглядят одинаково (скрыто)
-            buckshotChambers[i].classList.add('hidden-bullet');
-        });
-        
-        // Показываем только количество (не где)
         buckshotBullets.textContent = '?';
+        
+        // Все гнёзда выглядят одинаково
+        buckshotChambers.forEach(ch => {
+            ch.classList.remove('highlight', 'highlight-safe', 'bullet-mark');
+            ch.style.background = 'radial-gradient(circle, #444, #222)';
+        });
     }
     
     // ========== ВЫСТРЕЛ ==========
@@ -66,12 +55,17 @@ function initBuckshotGame() {
         if (isAnimating || gameOver) return;
         isAnimating = true;
         
+        // Отключаем кнопки
+        btnShootSelf.disabled = true;
+        btnShootBot.disabled = true;
+        btnSkip.disabled = true;
+        
         currentRound++;
         GC.updateRound(currentRound);
         
         // Крутим барабан
         const firedChamber = Math.floor(Math.random() * 6);
-        const hit = buckshotChambers[firedChamber] === 1;
+        const hit = buckshotChambersData[firedChamber] === 1;
         
         // Анимация вращения
         buckshotDrum.classList.add('spinning');
@@ -80,19 +74,20 @@ function initBuckshotGame() {
             buckshotDrum.classList.remove('spinning');
             
             // Подсветка
-            buckshotChambers.forEach(ch => ch.classList.remove('highlight', 'highlight-safe'));
+            buckshotChambers.forEach(ch => {
+                ch.classList.remove('highlight', 'highlight-safe');
+                ch.style.background = 'radial-gradient(circle, #444, #222)';
+            });
             
             if (hit) {
                 buckshotChambers[firedChamber].classList.add('highlight');
                 buckshotFlash.classList.add('active');
                 setTimeout(() => buckshotFlash.classList.remove('active'), 150);
                 
-                // Убираем патрон
-                buckshotChambers[firedChamber] = 0;
+                buckshotChambersData[firedChamber] = 0;
                 bulletsLeft--;
                 
                 if (target === 'player') {
-                    // Игрок проиграл
                     GC.setGameStatus('☠️ ТЫ ПРОИГРАЛ! ☠️', 'dead');
                     GC.showBlood();
                     GC.updateHistory({
@@ -101,7 +96,6 @@ function initBuckshotGame() {
                         text: `Раунд ${currentRound}: 💀 Выстрел в себя — ПРОИГРЫШ`
                     });
                 } else {
-                    // Бот проиграл
                     GC.setGameStatus('🎉 БОТ УБИТ! ТЫ ВЫИГРАЛ!', 'alive');
                     GC.updateHistory({
                         round: currentRound,
@@ -111,10 +105,11 @@ function initBuckshotGame() {
                 }
                 
                 gameOver = true;
-                disableButtons();
+                btnShootSelf.disabled = true;
+                btnShootBot.disabled = true;
+                btnSkip.disabled = true;
                 
             } else {
-                // Осечка
                 buckshotChambers[firedChamber].classList.add('highlight-safe');
                 
                 const targetName = target === 'player' ? 'себя' : 'бота';
@@ -127,11 +122,14 @@ function initBuckshotGame() {
                 
                 // Смена хода
                 isPlayerTurn = !isPlayerTurn;
-                updateTurnDisplay();
                 
-                // Ход бота
                 if (!isPlayerTurn && !gameOver) {
                     setTimeout(() => botTurn(), 1000);
+                } else if (isPlayerTurn && !gameOver) {
+                    btnShootSelf.disabled = false;
+                    btnShootBot.disabled = false;
+                    btnSkip.disabled = false;
+                    GC.setGameStatus('🎯 Твой ход! Выбери цель', 'alive');
                 }
             }
             
@@ -143,13 +141,11 @@ function initBuckshotGame() {
     function botTurn() {
         if (gameOver) return;
         
-        // Бот думает 1-2 секунды
-        const thinkTime = 1000 + Math.random() * 1000;
+        GC.setGameStatus('🤖 Бот думает...', '');
         
         setTimeout(() => {
             if (gameOver) return;
             
-            // Бот выбирает случайно: в себя (30%) или в игрока (70%)
             const shootSelf = Math.random() < 0.3;
             const target = shootSelf ? 'bot' : 'player';
             
@@ -160,86 +156,61 @@ function initBuckshotGame() {
             });
             
             fireBuckshot(target);
-        }, thinkTime);
+        }, 1500);
     }
     
-    // ========== ХОД ИГРОКА ==========
-    function playerTurn(target) {
-        if (!isPlayerTurn || gameOver) return;
-        
-        GC.updateHistory({
-            round: currentRound,
-            hit: false,
-            text: `Ты выбрал стрелять в ${target === 'player' ? 'себя' : 'бота'}`
-        });
-        
-        fireBuckshot(target);
-    }
-    
-    // ========== СКИП ХОДА ==========
-    function skipTurn() {
-        if (!isPlayerTurn || gameOver) return;
-        
-        GC.updateHistory({
-            round: currentRound,
-            hit: false,
-            text: '⏭️ Ты пропустил ход'
-        });
-        
-        isPlayerTurn = false;
-        updateTurnDisplay();
-        
-        setTimeout(() => botTurn(), 500);
-    }
-    
-    // ========== ОТОБРАЖЕНИЕ ХОДА ==========
-    function updateTurnDisplay() {
-        if (gameOver) return;
-        
-        if (isPlayerTurn) {
-            GC.setGameStatus('🎯 Твой ход! Выбери цель', 'alive');
-            enablePlayerButtons();
-        } else {
-            GC.setGameStatus('🤖 Ход бота...', '');
-            disableButtons();
+    // ========== КНОПКИ ==========
+    btnShootSelf.onclick = () => {
+        if (isPlayerTurn && !gameOver) {
+            GC.updateHistory({
+                round: currentRound,
+                hit: false,
+                text: `Ты выбрал стрелять в себя`
+            });
+            fireBuckshot('player');
         }
-    }
+    };
     
-    function enablePlayerButtons() {
-        btnShootSelf.disabled = false;
-        btnShootBot.disabled = false;
-        btnSkip.disabled = false;
-    }
+    btnShootBot.onclick = () => {
+        if (isPlayerTurn && !gameOver) {
+            GC.updateHistory({
+                round: currentRound,
+                hit: false,
+                text: `Ты выбрал стрелять в бота`
+            });
+            fireBuckshot('bot');
+        }
+    };
     
-    function disableButtons() {
-        btnShootSelf.disabled = true;
-        btnShootBot.disabled = true;
-        btnSkip.disabled = true;
-    }
+    btnSkip.onclick = () => {
+        if (isPlayerTurn && !gameOver) {
+            GC.updateHistory({
+                round: currentRound,
+                hit: false,
+                text: `⏭️ Ты пропустил ход`
+            });
+            
+            isPlayerTurn = false;
+            btnShootSelf.disabled = true;
+            btnShootBot.disabled = true;
+            btnSkip.disabled = true;
+            
+            setTimeout(() => botTurn(), 500);
+        }
+    };
     
-    // ========== СОБЫТИЯ ==========
-    btnShootSelf.addEventListener('click', () => playerTurn('player'));
-    btnShootBot.addEventListener('click', () => playerTurn('bot'));
-    btnSkip.addEventListener('click', skipTurn);
+    // ========== СТАРТ ==========
+    gameOver = false;
+    currentRound = 0;
+    isPlayerTurn = true;
+    isAnimating = false;
     
-    // ========== СБРОС ==========
-    function resetBuckshot() {
-        gameOver = false;
-        currentRound = 0;
-        isPlayerTurn = true;
-        bulletsLeft = 0;
-        buckshotChambers = [0, 0, 0, 0, 0, 0];
-        
-        buckshotChambers.forEach(ch => {
-            ch.classList.remove('highlight', 'highlight-safe', 'bullet-mark', 'hidden-bullet');
-        });
-        
-        GC.updateRound(0);
-        GC.setGameStatus('🎯 Твой ход! Выбери цель', 'alive');
-        updateTurnDisplay();
-        loadBuckshot();
-    }
+    GC.updateRound(0);
+    GC.setGameStatus('🎯 Твой ход! Выбери цель', 'alive');
     
-    // Начало игры
-    resetBuckshot();
+    btnShootSelf.disabled = false;
+    btnShootBot.disabled = false;
+    btnSkip.disabled = false;
+    
+    loadBuckshot();
 }
