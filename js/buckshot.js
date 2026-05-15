@@ -24,13 +24,24 @@ function initBuckshotGame() {
     let gameOver = false;
     let currentRound = 0;
     let isAnimating = false;
+    let skipsThisGame = 0;
+    let firstShot = true;
+    
+    const memesEnabled = GC.isMemesEnabled();
     
     // Скрываем обычный барабан
     if (normalDrumContainer) normalDrumContainer.style.display = 'none';
     
+    // Мемные тексты
+    if (memesEnabled) {
+        btnShootSelf.textContent = '🤡 В себя (лох)';
+        btnShootBot.textContent = '🤖 В Чепухатора';
+        btnSkip.textContent = '⏭️ Слить ход';
+    }
+    
     // ========== ЗАРЯДКА ==========
     function loadBuckshot() {
-        totalBullets = Math.floor(Math.random() * 3) + 1; // 1-3 патрона
+        totalBullets = Math.floor(Math.random() * 3) + 1;
         bulletsLeft = totalBullets;
         
         buckshotChambersData = [0, 0, 0, 0, 0, 0];
@@ -41,9 +52,8 @@ function initBuckshotGame() {
         }
         pos.forEach(p => buckshotChambersData[p] = 1);
         
-        buckshotBullets.textContent = '?';
+        buckshotBullets.textContent = memesEnabled ? '🥒?' : '?';
         
-        // Все гнёзда выглядят одинаково
         buckshotChambers.forEach(ch => {
             ch.classList.remove('highlight', 'highlight-safe', 'bullet-mark');
             ch.style.background = 'radial-gradient(circle, #444, #222)';
@@ -55,7 +65,6 @@ function initBuckshotGame() {
         if (isAnimating || gameOver) return;
         isAnimating = true;
         
-        // Отключаем кнопки
         btnShootSelf.disabled = true;
         btnShootBot.disabled = true;
         btnSkip.disabled = true;
@@ -63,17 +72,18 @@ function initBuckshotGame() {
         currentRound++;
         GC.updateRound(currentRound);
         
-        // Крутим барабан
+        // Счётчик выстрелов
+        GC.onShootClick();
+        
         const firedChamber = Math.floor(Math.random() * 6);
         const hit = buckshotChambersData[firedChamber] === 1;
         
-        // Анимация вращения
+        // Анимация
         buckshotDrum.classList.add('spinning');
         
         setTimeout(() => {
             buckshotDrum.classList.remove('spinning');
             
-            // Подсветка
             buckshotChambers.forEach(ch => {
                 ch.classList.remove('highlight', 'highlight-safe');
                 ch.style.background = 'radial-gradient(circle, #444, #222)';
@@ -88,48 +98,76 @@ function initBuckshotGame() {
                 bulletsLeft--;
                 
                 if (target === 'player') {
-                    GC.setGameStatus('☠️ ТЫ ПРОИГРАЛ! ☠️', 'dead');
+                    GC.setGameStatus(
+                        memesEnabled ? '🪦 RIP БРАТИШКА' : '☠️ ТЫ ПРОИГРАЛ!', 
+                        'dead'
+                    );
                     GC.showBlood();
                     GC.updateHistory({
                         round: currentRound,
                         hit: true,
-                        text: `Раунд ${currentRound}: 💀 Выстрел в себя — ПРОИГРЫШ`
+                        text: memesEnabled 
+                            ? `Раунд ${currentRound}: 💀 Выстрел в себя — ОТЪЕХАЛ`
+                            : `Раунд ${currentRound}: 💀 Выстрел в себя — ПРОИГРЫШ`
                     });
+                    
+                    // Ачивка: выстрелил в себя
+                    GC.onSelfShoot(false);
                 } else {
-                    GC.setGameStatus('🎉 БОТ УБИТ! ТЫ ВЫИГРАЛ!', 'alive');
+                    GC.setGameStatus(
+                        memesEnabled ? '🎉 ЧЕПУХАТОР УНИЧТОЖЕН!' : '🎉 БОТ УБИТ! ТЫ ВЫИГРАЛ!', 
+                        'alive'
+                    );
                     GC.updateHistory({
                         round: currentRound,
                         hit: true,
-                        text: `Раунд ${currentRound}: 🤖 Выстрел в бота — ПОБЕДА`
+                        text: memesEnabled
+                            ? `Раунд ${currentRound}: 🤖 Выстрел в бота — ПОБЕДА`
+                            : `Раунд ${currentRound}: 🤖 Выстрел в бота — ПОБЕДА`
                     });
                 }
                 
                 gameOver = true;
-                btnShootSelf.disabled = true;
-                btnShootBot.disabled = true;
-                btnSkip.disabled = true;
+                GC.checkAchievements(target !== 'player', currentRound, totalBullets, firstShot);
                 
             } else {
                 buckshotChambers[firedChamber].classList.add('highlight-safe');
                 
-                const targetName = target === 'player' ? 'себя' : 'бота';
-                GC.setGameStatus(`✅ Осечка! Выстрел в ${targetName}`, 'alive');
+                const targetName = target === 'player' ? 'себя' : (memesEnabled ? 'Чепухатора' : 'бота');
+                GC.setGameStatus(
+                    memesEnabled ? '✅ ПОВЕЗЛО ДУРАКУ!' : `✅ Осечка! Выстрел в ${targetName}`, 
+                    'alive'
+                );
                 GC.updateHistory({
                     round: currentRound,
                     hit: false,
-                    text: `Раунд ${currentRound}: ✅ В ${targetName} — Осечка`
+                    text: memesEnabled
+                        ? `Раунд ${currentRound}: ✅ В ${targetName} — Пук!`
+                        : `Раунд ${currentRound}: ✅ В ${targetName} — Осечка`
                 });
                 
-                // Смена хода
+                // Ачивка: выжил после выстрела в себя
+                if (target === 'player') {
+                    GC.onSelfShoot(true);
+                }
+                
+                firstShot = false;
                 isPlayerTurn = !isPlayerTurn;
                 
                 if (!isPlayerTurn && !gameOver) {
+                    GC.setGameStatus(
+                        memesEnabled ? '🤖 Чепухатор думает...' : '🤖 Бот думает...', 
+                        ''
+                    );
                     setTimeout(() => botTurn(), 1000);
                 } else if (isPlayerTurn && !gameOver) {
                     btnShootSelf.disabled = false;
                     btnShootBot.disabled = false;
                     btnSkip.disabled = false;
-                    GC.setGameStatus('🎯 Твой ход! Выбери цель', 'alive');
+                    GC.setGameStatus(
+                        memesEnabled ? '🎯 Твой ход! Кого шлёпнем?' : '🎯 Твой ход! Выбери цель', 
+                        'alive'
+                    );
                 }
             }
             
@@ -141,8 +179,6 @@ function initBuckshotGame() {
     function botTurn() {
         if (gameOver) return;
         
-        GC.setGameStatus('🤖 Бот думает...', '');
-        
         setTimeout(() => {
             if (gameOver) return;
             
@@ -152,7 +188,9 @@ function initBuckshotGame() {
             GC.updateHistory({
                 round: currentRound,
                 hit: false,
-                text: `🤖 Бот выбрал стрелять в ${shootSelf ? 'себя' : 'тебя'}`
+                text: memesEnabled
+                    ? `🤖 Чепухатор выбрал ${shootSelf ? 'себя' : 'тебя'}`
+                    : `🤖 Бот выбрал стрелять в ${shootSelf ? 'себя' : 'тебя'}`
             });
             
             fireBuckshot(target);
@@ -165,7 +203,7 @@ function initBuckshotGame() {
             GC.updateHistory({
                 round: currentRound,
                 hit: false,
-                text: `Ты выбрал стрелять в себя`
+                text: memesEnabled ? 'Ты выбрал стрелять в себя (лох)' : 'Ты выбрал стрелять в себя'
             });
             fireBuckshot('player');
         }
@@ -176,7 +214,7 @@ function initBuckshotGame() {
             GC.updateHistory({
                 round: currentRound,
                 hit: false,
-                text: `Ты выбрал стрелять в бота`
+                text: memesEnabled ? 'Ты выбрал стрелять в Чепухатора' : 'Ты выбрал стрелять в бота'
             });
             fireBuckshot('bot');
         }
@@ -184,16 +222,24 @@ function initBuckshotGame() {
     
     btnSkip.onclick = () => {
         if (isPlayerTurn && !gameOver) {
+            skipsThisGame++;
+            GC.onSkipClick();
+            
             GC.updateHistory({
                 round: currentRound,
                 hit: false,
-                text: `⏭️ Ты пропустил ход`
+                text: memesEnabled ? '⏭️ Слил ход как батон' : '⏭️ Ты пропустил ход'
             });
             
             isPlayerTurn = false;
             btnShootSelf.disabled = true;
             btnShootBot.disabled = true;
             btnSkip.disabled = true;
+            
+            GC.setGameStatus(
+                memesEnabled ? '🤖 Чепухатор рад твоему скипу' : '🤖 Ход бота...', 
+                ''
+            );
             
             setTimeout(() => botTurn(), 500);
         }
@@ -204,9 +250,14 @@ function initBuckshotGame() {
     currentRound = 0;
     isPlayerTurn = true;
     isAnimating = false;
+    skipsThisGame = 0;
+    firstShot = true;
     
     GC.updateRound(0);
-    GC.setGameStatus('🎯 Твой ход! Выбери цель', 'alive');
+    GC.setGameStatus(
+        memesEnabled ? '🎯 Твой ход! Кого шлёпнем?' : '🎯 Твой ход! Выбери цель', 
+        'alive'
+    );
     
     btnShootSelf.disabled = false;
     btnShootBot.disabled = false;
