@@ -1,3 +1,7 @@
+/* ============================================
+   СТИЛИ ЭКРАНА ИГРЫ (ВСЕ РЕЖИМЫ)
+   ============================================ */
+
 #game-screen {
     background: radial-gradient(ellipse at center, 
         rgba(50, 0, 0, 0.6) 0%, 
@@ -7,14 +11,17 @@
 .game-container {
     text-align: center;
     padding: 2rem;
+    width: 100%;
+    max-width: 800px;
 }
 
+/* Информация сверху */
 .game-info {
     display: flex;
     justify-content: space-between;
     width: 100%;
     max-width: 500px;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem;
     font-size: 1.1rem;
     color: var(--gold);
 }
@@ -26,6 +33,7 @@
     border: 1px solid var(--light-gray);
 }
 
+/* ========== БАРАБАН ========== */
 .drum-container {
     position: relative;
     width: 250px;
@@ -41,10 +49,13 @@
     background: radial-gradient(circle, #3a3a3a, #1a1a1a);
     position: relative;
     transition: transform 0.3s ease;
+    box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.8),
+        inset 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 .drum.spinning {
-    animation: spin 0.5s linear infinite;
+    animation: spin 0.3s linear infinite;
 }
 
 @keyframes spin {
@@ -52,6 +63,7 @@
     to { transform: rotate(360deg); }
 }
 
+/* Гнёзда на барабане */
 .chamber-game {
     position: absolute;
     width: 40px;
@@ -73,12 +85,33 @@
     border-color: var(--accent);
     background: radial-gradient(circle, #ff4444, #8b0000);
     box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    animation: chamberPulse 0.5s ease;
+}
+
+.chamber-game.highlight-safe {
+    border-color: var(--success);
+    background: radial-gradient(circle, #4caf50, #2d5a27);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
 }
 
 .chamber-game.bullet-mark {
     border-color: var(--gold);
+    background: radial-gradient(circle, #8b6914, #4a3500);
 }
 
+.chamber-game.hidden-bullet {
+    /* Для багшота - патроны скрыты */
+    border-color: #555;
+    background: radial-gradient(circle, #444, #222);
+}
+
+@keyframes chamberPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Ствол */
 .gun-barrel {
     position: absolute;
     top: -30px;
@@ -90,10 +123,12 @@
     border-radius: 2px;
 }
 
+/* ========== СТАТУС ИГРЫ ========== */
 .game-status {
     font-size: 1.5rem;
     min-height: 3rem;
     margin: 1.5rem 0;
+    transition: all 0.3s;
 }
 
 .game-status.alive {
@@ -112,19 +147,32 @@
     30%, 70% { transform: translateX(5px); }
 }
 
+/* ========== КНОПКИ ИГРЫ ========== */
 .game-buttons {
     display: flex;
     gap: 1rem;
     justify-content: center;
     margin-top: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .btn-shoot {
     font-size: 1.6rem;
     padding: 18px 50px;
     background: linear-gradient(180deg, #cc0000, #660000);
+    animation: shootGlow 2s ease-in-out infinite;
 }
 
+@keyframes shootGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
+}
+
+.btn-shoot:disabled {
+    animation: none;
+}
+
+/* ========== ИСТОРИЯ ========== */
 .game-history {
     margin-top: 2rem;
     background: rgba(0, 0, 0, 0.3);
@@ -135,6 +183,8 @@
     width: 100%;
     max-height: 120px;
     overflow-y: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .game-history h4 {
@@ -146,6 +196,7 @@
 .history-list {
     list-style: none;
     font-size: 0.8rem;
+    color: var(--text);
 }
 
 .history-list li {
@@ -162,6 +213,7 @@
     color: var(--success);
 }
 
+/* ========== ВСПЫШКА ВЫСТРЕЛА ========== */
 .muzzle-flash {
     position: absolute;
     top: -60px;
@@ -173,6 +225,7 @@
     border-radius: 50%;
     opacity: 0;
     pointer-events: none;
+    transition: opacity 0.05s;
 }
 
 .muzzle-flash.active {
@@ -183,4 +236,135 @@
 @keyframes flash {
     from { transform: translateX(-50%) scale(0.5); opacity: 1; }
     to { transform: translateX(-50%) scale(2); opacity: 0; }
+}
+
+/* ========== БАГШОТ ========== */
+#buckshot-ui {
+    margin: 1rem 0;
+}
+
+.buckshot-info {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    color: var(--gold);
+}
+
+.buckshot-info b {
+    color: var(--accent);
+    font-size: 1.5rem;
+}
+
+/* ========== КАЛЬМАР ========== */
+#squid-ui {
+    margin: 1rem 0;
+}
+
+.player-box {
+    background: var(--dark-gray);
+    border: 3px solid var(--light-gray);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+    min-width: 140px;
+}
+
+.player-box.active-player {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    animation: playerGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes playerGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+    50% { box-shadow: 0 0 35px rgba(212, 175, 55, 0.8); }
+}
+
+.player-box.dead-player {
+    border-color: var(--accent);
+    background: #2a0000;
+    opacity: 0.6;
+}
+
+.player-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s;
+}
+
+.player-box.dead-player .player-emoji {
+    filter: grayscale(100%);
+}
+
+.player-name {
+    font-size: 1.2rem;
+    color: var(--text-bright);
+    margin-bottom: 1rem;
+}
+
+.lose-btn {
+    width: 100%;
+    font-size: 1rem !important;
+    padding: 8px 16px !important;
+}
+
+.player-box.dead-player .lose-btn {
+    display: none;
+}
+
+#squid-info {
+    font-size: 1.1rem;
+    color: var(--gold);
+    min-height: 2rem;
+    margin: 1rem 0;
+}
+
+.squid-dramatic {
+    animation: dramaticPause 1s ease;
+}
+
+@keyframes dramaticPause {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(0.3); }
+    100% { filter: brightness(1); }
+}
+
+/* ========== АДАПТИВ ========== */
+@media (max-width: 600px) {
+    .drum-container {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .drum {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .chamber-game {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .chamber-game:nth-child(1) { top: 10px; left: 84px; }
+    .chamber-game:nth-child(2) { top: 40px; right: 18px; }
+    .chamber-game:nth-child(3) { bottom: 40px; right: 18px; }
+    .chamber-game:nth-child(4) { bottom: 10px; left: 84px; }
+    .chamber-game:nth-child(5) { bottom: 40px; left: 18px; }
+    .chamber-game:nth-child(6) { top: 40px; left: 18px; }
+    
+    .btn-shoot {
+        font-size: 1.2rem;
+        padding: 14px 30px;
+    }
+    
+    .game-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .player-box {
+        min-width: 120px;
+        padding: 1rem;
+    }
 }
