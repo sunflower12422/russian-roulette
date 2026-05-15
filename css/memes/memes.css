@@ -1,1 +1,217 @@
+/* ============================================
+   СТИЛИ МЕМ-РЕЖИМА
+   ============================================ */
 
+/* Тряска экрана при включении мем-режима */
+@keyframes memeShake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    10% { transform: translate(-5px, -3px) rotate(-1deg); }
+    20% { transform: translate(5px, 3px) rotate(1deg); }
+    30% { transform: translate(-3px, 5px) rotate(-0.5deg); }
+    40% { transform: translate(3px, -5px) rotate(0.5deg); }
+    50% { transform: translate(-5px, -3px) rotate(-1deg); }
+    60% { transform: translate(5px, 3px) rotate(1deg); }
+    70% { transform: translate(-3px, 5px) rotate(-0.5deg); }
+    80% { transform: translate(3px, -5px) rotate(0.5deg); }
+    90% { transform: translate(-5px, -3px) rotate(-1deg); }
+}
+
+.meme-shake {
+    animation: memeShake 0.6s ease;
+}
+
+/* Фон мем-режима */
+body.meme-mode {
+    background: linear-gradient(45deg, #1a0030, #0a0a0a, #30001a);
+    background-size: 400% 400%;
+    animation: memeBg 5s ease infinite;
+}
+
+@keyframes memeBg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Безумные буквы в меню */
+@keyframes crazyText {
+    0% { transform: rotate(-2deg) scale(1); }
+    25% { transform: rotate(2deg) scale(1.05); }
+    50% { transform: rotate(-1deg) scale(1); }
+    75% { transform: rotate(1deg) scale(0.95); }
+    100% { transform: rotate(-2deg) scale(1); }
+}
+
+.meme-mode .menu-title {
+    animation: titleGlow 1s ease-in-out infinite alternate, crazyText 3s ease infinite !important;
+    color: #ff00ff !important;
+    text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff, 0 0 80px #ff00ff !important;
+}
+
+.meme-mode .menu-revolver {
+    animation: revolverFloat 1s ease-in-out infinite !important;
+    filter: drop-shadow(0 0 20px #ff00ff) !important;
+}
+
+.meme-mode .menu-revolver::after {
+    content: '🐸';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    font-size: 2rem;
+    animation: frogJump 0.5s ease infinite;
+}
+
+@keyframes frogJump {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Кнопки в мем-режиме */
+.meme-mode .btn {
+    border-color: #ff00ff !important;
+    background: linear-gradient(180deg, #800080, #4a004a) !important;
+    animation: memeBtnGlow 1s ease infinite;
+}
+
+@keyframes memeBtnGlow {
+    0%, 100% { box-shadow: 0 0 15px #ff00ff; }
+    50% { box-shadow: 0 0 35px #ff00ff, 0 0 60px #800080; }
+}
+
+.meme-mode .btn:hover {
+    background: linear-gradient(180deg, #ff00ff, #800080) !important;
+}
+
+/* Режимы в мем-режиме */
+.meme-mode .mode-card {
+    border-color: #ff00ff !important;
+}
+
+.meme-mode .mode-card:hover {
+    border-color: #ffff00 !important;
+    box-shadow: 0 0 30px #ffff00 !important;
+}
+
+.meme-mode .mode-card .mode-icon {
+    animation: iconSpin 2s linear infinite;
+}
+
+@keyframes iconSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Барабан в мем-режиме */
+.meme-mode .drum {
+    border-color: #ff00ff !important;
+    box-shadow: 0 0 30px #ff00ff, inset 0 0 50px rgba(255, 0, 255, 0.3) !important;
+}
+
+.meme-mode .chamber-game.bullet-mark {
+    border-color: #ffff00 !important;
+    background: radial-gradient(circle, #ffff00, #ff8800) !important;
+}
+
+.meme-mode .chamber-game.highlight {
+    border-color: #ff00ff !important;
+    background: radial-gradient(circle, #ff00ff, #800080) !important;
+    box-shadow: 0 0 30px #ff00ff !important;
+}
+
+/* Статус в мем-режиме */
+.meme-mode .game-status.dead {
+    color: #ff00ff !important;
+    animation: deadShake 0.3s ease infinite !important;
+}
+
+.meme-mode .game-status.alive {
+    color: #00ff00 !important;
+}
+
+/* История в мем-режиме */
+.meme-mode .history-list .hit {
+    color: #ff00ff !important;
+}
+
+.meme-mode .history-list .miss {
+    color: #00ff00 !important;
+}
+
+/* Кровь в мем-режиме */
+.meme-mode .blood-splatter.active {
+    background: radial-gradient(circle, rgba(255, 0, 255, 0.8) 0%, rgba(255, 0, 255, 0) 70%) !important;
+}
+
+/* Подпись Test your luck */
+#menu-subtitle[style*="pointer"] {
+    transition: all 0.3s;
+}
+
+#menu-subtitle[style*="pointer"]:hover {
+    color: #ff00ff !important;
+    transform: scale(1.1);
+    text-shadow: 0 0 10px #ff00ff;
+}
+
+/* Версия в мем-режиме */
+.meme-mode .version {
+    color: #ff00ff !important;
+    animation: versionBlink 0.5s ease infinite alternate;
+}
+
+@keyframes versionBlink {
+    from { opacity: 1; }
+    to { opacity: 0.5; }
+}
+
+/* Конь */
+@keyframes horseRun {
+    0% { transform: translateX(-100vw); }
+    100% { transform: translateX(100vw); }
+}
+
+.horse-easter-egg {
+    position: fixed;
+    top: 50%;
+    font-size: 5rem;
+    z-index: 999;
+    pointer-events: none;
+    animation: horseRun 2s linear;
+}
+
+/* Огурцы в настройке */
+.meme-mode .chamber-slot.loaded::after {
+    background: #00ff00 !important;
+    border-radius: 30% !important;
+    width: 25px !important;
+    height: 15px !important;
+}
+
+/* Достижения в мем-режиме */
+.meme-mode .achievement-notification {
+    border-color: #ff00ff !important;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5) !important;
+}
+
+.meme-mode .ach-name {
+    color: #ff00ff !important;
+}
+
+/* Пук-стрелок эффект */
+@keyframes fartCloud {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+.fart-effect {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, #8f8, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: fartCloud 0.5s ease-out;
+}
