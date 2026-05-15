@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="css/modes.css">
     <link rel="stylesheet" href="css/setup.css">
     <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/achievements/achievements.css">
+    <link rel="stylesheet" href="css/memes/memes.css">
 </head>
 <body>
     
@@ -23,45 +25,75 @@
         <!-- ========== ЭКРАН 1: МЕНЮ ========== -->
         <div id="menu-screen" class="screen active">
             <div class="menu-container">
-                <div class="menu-revolver">🔫</div>
-                <h1 class="menu-title">РУССКАЯ</h1>
-                <h1 class="menu-title">РУЛЕТКА</h1>
-                <p class="menu-subtitle">Испытай свою удачу</p>
+                <div class="menu-revolver" id="menu-revolver">🔫</div>
+                <h1 class="menu-title" id="menu-title">РУССКАЯ</h1>
+                <h1 class="menu-title" id="menu-title2">РУЛЕТКА</h1>
+                <p class="menu-subtitle" id="menu-subtitle">Испытай свою удачу</p>
                 <div class="menu-buttons">
                     <button id="btn-play" class="btn">🎯 ИГРАТЬ</button>
+                    <button id="btn-achievements" class="btn btn-settings">🏆 ДОСТИЖЕНИЯ</button>
                     <button id="btn-settings" class="btn btn-settings">⚙️ НАСТРОЙКИ</button>
                 </div>
             </div>
-            <span class="version">v2.0.0</span>
+            <span class="version" id="version-text">v2.0.0</span>
         </div>
         
-        <!-- ========== ЭКРАН 2: ВЫБОР РЕЖИМА ========== -->
+        <!-- ========== ЭКРАН 2: ДОСТИЖЕНИЯ ========== -->
+        <div id="achievements-screen" class="screen">
+            <div class="achievements-container">
+                <h2 class="achievements-title">🏆 ДОСТИЖЕНИЯ</h2>
+                <p class="achievements-subtitle" id="ach-subtitle">Собери их всех!</p>
+                
+                <div class="ach-stats" id="ach-stats">
+                    <div class="ach-stat">
+                        <div class="ach-stat-value" id="stat-unlocked">0</div>
+                        <div class="ach-stat-label">Получено</div>
+                    </div>
+                    <div class="ach-stat">
+                        <div class="ach-stat-value" id="stat-total">20</div>
+                        <div class="ach-stat-label">Всего</div>
+                    </div>
+                    <div class="ach-stat">
+                        <div class="ach-stat-value" id="stat-deaths">0</div>
+                        <div class="ach-stat-label">Смертей</div>
+                    </div>
+                </div>
+                
+                <div class="ach-grid" id="ach-grid">
+                    <!-- Ачивки вставляются через JS -->
+                </div>
+                
+                <button id="btn-ach-back" class="btn btn-back ach-back-btn">← Назад</button>
+            </div>
+        </div>
+        
+        <!-- ========== ЭКРАН 3: ВЫБОР РЕЖИМА ========== -->
         <div id="modes-screen" class="screen">
             <div class="modes-container">
-                <h2 class="modes-title">🎮 ВЫБОР РЕЖИМА</h2>
+                <h2 class="modes-title" id="modes-title">🎮 ВЫБОР РЕЖИМА</h2>
                 
                 <div class="modes-grid">
                     <button id="mode-classic" class="mode-card">
                         <span class="mode-icon">🔫</span>
-                        <span class="mode-name">Классическая</span>
+                        <span class="mode-name" id="mode-name-classic">Классическая</span>
                         <span class="mode-desc">1 патрон, крутится барабан</span>
                     </button>
                     
                     <button id="mode-nospin" class="mode-card">
                         <span class="mode-icon">🔒</span>
-                        <span class="mode-name">Без вращения</span>
+                        <span class="mode-name" id="mode-name-nospin">Без вращения</span>
                         <span class="mode-desc">Последовательные выстрелы</span>
                     </button>
                     
                     <button id="mode-buckshot" class="mode-card">
                         <span class="mode-icon">💀</span>
-                        <span class="mode-name">Багшот</span>
+                        <span class="mode-name" id="mode-name-buckshot">Багшот</span>
                         <span class="mode-desc">Ты против бота</span>
                     </button>
                     
                     <button id="mode-squid" class="mode-card">
                         <span class="mode-icon">🦑</span>
-                        <span class="mode-name">Кальмар</span>
+                        <span class="mode-name" id="mode-name-squid">Кальмар</span>
                         <span class="mode-desc">Игра с другом</span>
                     </button>
                 </div>
@@ -70,13 +102,13 @@
             </div>
         </div>
         
-        <!-- ========== ЭКРАН 3: НАСТРОЙКА ========== -->
+        <!-- ========== ЭКРАН 4: НАСТРОЙКА ========== -->
         <div id="setup-screen" class="screen">
             <div class="setup-container">
-                <h2 class="setup-title">⚙️ НАСТРОЙКА ИГРЫ</h2>
+                <h2 class="setup-title" id="setup-title">⚙️ НАСТРОЙКА ИГРЫ</h2>
                 
                 <div class="setup-section">
-                    <p class="section-label">🔫 Зарядите револьвер:</p>
+                    <p class="section-label" id="setup-label">🔫 Зарядите револьвер:</p>
                     
                     <div class="drum-setup">
                         <div class="chamber-slot" data-index="0"></div>
@@ -100,7 +132,7 @@
                 </div>
                 
                 <div id="spin-mode-section" class="setup-section">
-                    <p class="section-label">🎮 Режим вращения:</p>
+                    <p class="section-label" id="spin-label">🎮 Режим вращения:</p>
                     <div class="mode-selector">
                         <button id="mode-spin" class="mode-btn selected">🔄 Крутить барабан</button>
                         <button id="mode-no-spin" class="mode-btn">🔒 Последовательно</button>
@@ -109,12 +141,12 @@
                 
                 <div class="setup-buttons">
                     <button id="btn-back-setup" class="btn btn-back">← Назад</button>
-                    <button id="btn-start-game" class="btn btn-danger">💀 НАЧАТЬ ИГРУ</button>
+                    <button id="btn-start-game" class="btn btn-danger" id="btn-start-text">💀 НАЧАТЬ ИГРУ</button>
                 </div>
             </div>
         </div>
         
-        <!-- ========== ЭКРАН 4: ИГРА ========== -->
+        <!-- ========== ЭКРАН 5: ИГРА ========== -->
         <div id="game-screen" class="screen">
             <div class="game-container">
                 
@@ -183,7 +215,7 @@
                 <p id="game-status" class="game-status">🎯 Нажмите на курок</p>
                 
                 <div id="game-buttons-normal" class="game-buttons">
-                    <button id="btn-shoot" class="btn btn-shoot">💥 ВЫСТРЕЛ</button>
+                    <button id="btn-shoot" class="btn btn-shoot" id="btn-shoot-text">💥 ВЫСТРЕЛ</button>
                 </div>
                 
                 <div class="game-buttons" style="margin-top: 0.5rem;">
@@ -204,7 +236,11 @@
     </div>
     
     <!-- JavaScript -->
-    <script src="js/game-logic.js"></script>
+    <script src="js/achievements/achievements.js"></script>
+    <script src="js/achievements/normal.js"></script>
+    <script src="js/achievements/secret.js"></script>
+    <script src="js/achievements/meme.js"></script>
+    <script src="js/memes/memes.js"></script>
     <script src="js/classic.js"></script>
     <script src="js/buckshot.js"></script>
     <script src="js/squid.js"></script>
